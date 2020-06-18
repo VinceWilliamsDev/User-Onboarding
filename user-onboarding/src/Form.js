@@ -1,4 +1,5 @@
-import React, {useState} from 'react'
+import React, { useState } from 'react'
+import axios from 'axios'
 
 // We want to create a form to onboard a new user to our system. We need _at least_ the following pieces of information about our new user:
 
@@ -10,22 +11,58 @@ import React, {useState} from 'react'
 
 export default function Form(props) {
     
+    //initial form values
     const initialFormValues = {
-        name: '',
+        username: '',
         email: '',
         password: '',
-        terms: false
+        terms: false,
     }
 
-    const {formValues, setFormValues } = useState(initialFormValues)
+    //form state
+    const [ formValues, setFormValues ] = useState(initialFormValues)
 
-    const onChange = evt => {
-        const name = evt.target.name
-        const value = evt.target.value
+    console.log(formValues)
+    //track state changes to formValues
+    const onChange = event => {
+        const name = event.target.name
+        const value = event.target.value
+
+        setFormValues({
+            ...formValues,
+            [name]: value
+        })
     }
+
+    const onCheckboxChange = event => {
+        const name = event.target.name
+        const checked = event.target.checked
+
+        setFormValues({
+            ...formValues,
+            [name]: checked
+        })
+    }
+
+    //onSubmit send formValues to the api
+    const onSubmit = event => {
+        event.preventDefault()
+    
+        axios.post('https://reqres.in/api/users', formValues)
+            .then(res => {
+                console.log(res)
+            })
+            .catch(err => {
+                console.log(err)
+            })
+            .finally(() => {
+                setFormValues(initialFormValues)
+            })
+    }
+
 
     return (
-        <form>
+        <form onSubmit={onSubmit}> 
             <div>
                 <h2>Onboard Your New User</h2>
             </div>
@@ -34,8 +71,8 @@ export default function Form(props) {
                 {/* inputs  */}
                 <label>Name&nbsp;
                     <input
-                        value={formValues.name}
-                        name='name'
+                        value={formValues.username}
+                        name='username'
                         type='text'
                         onChange={onChange}
                     />
@@ -61,10 +98,9 @@ export default function Form(props) {
 
                 <label>Accept Terms of Service?&nbsp;
                     <input 
-                        value={formValues.terms}
                         name='terms'
                         type='checkbox'
-                        onChange={onChange}
+                        onChange={onCheckboxChange}
                         checked={formValues.terms === true}
                     />
                 </label>
