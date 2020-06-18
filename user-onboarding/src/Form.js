@@ -11,6 +11,8 @@ import axios from 'axios'
 
 export default function Form(props) {
     
+    const {users, setUsers} = props
+
     //initial form values
     const initialFormValues = {
         username: '',
@@ -51,6 +53,7 @@ export default function Form(props) {
         axios.post('https://reqres.in/api/users', formValues)
             .then(res => {
                 console.log(res)
+                setUsers(team => [...team, res.data])
             })
             .catch(err => {
                 console.log(err)
